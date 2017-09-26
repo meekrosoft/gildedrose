@@ -13,17 +13,18 @@
     <name>gildedrose</name>
     <url>http://maven.apache.org</url>
 
-    <distributionManagement>
-      <repository>
-        <id>workshp-gildedrose</id>
-        <name>Release management</name>
-        <url>http://18.194.104.10:8081/repository/workshop-dev/</url>
-      </repository>
-    </distributionManagement>
     <properties>
       <java.version>1.8</java.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+      <repository>
+        <id>workshop-gildedrose</id>
+        <name>Release management</name>
+        <url>http://18.194.104.10:8081/repository/workshop-dev/</url>
+      </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
