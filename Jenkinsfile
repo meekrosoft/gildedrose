@@ -21,18 +21,18 @@ node {
       }
    }
    stage('Build') {
-     sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v ./tempDir:/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn install'
+     sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v "$PWD/tempDir":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn install'
    }
    stage('Results') {
       junit '**/target/surefire-reports/TEST-*.xml'
       archive 'target/*.jar'
    }
    stage('Javadoc') {
-      sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v ./tempDir:/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn site'
+      sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v "$PWD/tempDir":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn site'
       archive 'target/site/**/*'
    }
    stage('Nexus Upload') {
-      sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v ./tempDir:/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn deploy'
+      sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v "$PWD/tempDir":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn deploy'
       archive 'target/site/**/*'
    }
 }
