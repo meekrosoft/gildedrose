@@ -22,7 +22,7 @@
       <repository>
         <id>workshop-gildedrose</id>
         <name>Release management</name>
-        <url>http://18.194.104.10:8081/repository/workshop-dev/</url>
+        <url>http://35.158.242.34:8081/repository/workshop-dev/</url>
       </repository>
     </distributionManagement>
 
