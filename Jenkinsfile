@@ -17,8 +17,8 @@ node {
               String commitSha1 = scmData.GIT_COMMIT.trim()
               pomFile.version = "${pomFile.version.replace('-SNAPSHOT', '')}-${timeStamp}-${commitSha1}"
               writeMavenPom(file: 'pom.xml', model: pomFile)
-              stash (name: 'metadataFile', includes: 'pom.xml')
           }
+          stash (name: 'metadataFile', includes: 'pom.xml')
       }
    }
    stage('Build') {
