@@ -1,7 +1,7 @@
 node {
    stage('Preparation') { // for display purposes
       // Get some code from a GitHub repository
-      def gitData = checkout([
+      def scmData = checkout([
         $class: 'GitSCM',
         branches: [[name: 'master']],
         doGenerateSubmoduleConfigurations: false,
@@ -14,7 +14,7 @@ node {
           if (pomFile.version.endsWith('-SNAPSHOT')) {
               def currentDateTime = new Date()
               String timeStamp = currentDateTime.format("yyyy.MM.dd'T'HH.mm.ss.S")
-              String commitSha1 = sh(returnStdout: true, script: 'git log -n 1 --pretty=%H').trim()
+              String commitSha1 = scmData.GIT_COMMIT.trim()
               pomFile.version = "${pomFile.version.replace('-SNAPSHOT', '')}-${timeStamp}-${commitSha1}"
               writeMavenPom(file: 'pom.xml', model: pomFile)
           }
