@@ -55,7 +55,7 @@ node {
       archive 'target/site/**/*'
    }
    stage('Promote to TEST') {
-      input "Deploy to STAGING?"
+      input "Deploy to TEST?"
       //deleteDir() // Clean-up working directory
       def scmData = checkout([
           $class: 'GitSCM',
@@ -70,4 +70,36 @@ node {
       }
       sh 'docker run -i --rm --name my-maven-project -v ~/.gradle:/root/.gradle -v ~/.m2:/root/.m2  -v "$PWD/tempDir2":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 ./gradlew publish -P targetEnvironment=test -P pomFile=pom.xml'
    }
+   stage('Promote to STAGING') {
+      input "Deploy to STAGING?"
+      //deleteDir() // Clean-up working directory
+      def scmData = checkout([
+          $class: 'GitSCM',
+          branches: [[name: 'master']],
+          doGenerateSubmoduleConfigurations: false,
+          extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'tempDir2']],
+          submoduleCfg: [],
+          userRemoteConfigs: [[url: 'https://github.com/meekrosoft/MavenRepositoryPromotion.git']]
+        ])
+      dir ('tempDir2') {
+        unstash 'metadataFile'
+      }
+      sh 'docker run -i --rm --name my-maven-project -v ~/.gradle:/root/.gradle -v ~/.m2:/root/.m2  -v "$PWD/tempDir2":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 ./gradlew publish -P targetEnvironment=staging -P pomFile=pom.xml'
+   }
+      stage('Promote to PROD') {
+         input "Deploy to PROD, baby?"
+         //deleteDir() // Clean-up working directory
+         def scmData = checkout([
+             $class: 'GitSCM',
+             branches: [[name: 'master']],
+             doGenerateSubmoduleConfigurations: false,
+             extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'tempDir2']],
+             submoduleCfg: [],
+             userRemoteConfigs: [[url: 'https://github.com/meekrosoft/MavenRepositoryPromotion.git']]
+           ])
+         dir ('tempDir2') {
+           unstash 'metadataFile'
+         }
+         sh 'docker run -i --rm --name my-maven-project -v ~/.gradle:/root/.gradle -v ~/.m2:/root/.m2  -v "$PWD/tempDir2":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 ./gradlew publish -P targetEnvironment=prod -P pomFile=pom.xml'
+      }
 }
