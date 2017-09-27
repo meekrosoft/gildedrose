@@ -22,6 +22,7 @@ node {
       }
    }
    stage('Build') {
+     sh 'cat $PWD/tempDir/pom.xml'
      sh 'docker run -i --rm --name my-maven-project -v ~/.m2:/root/.m2  -v "$PWD/tempDir":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn install'
    }
    stage('Results') {
