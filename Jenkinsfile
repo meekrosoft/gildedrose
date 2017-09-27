@@ -38,7 +38,7 @@ node {
    }
    stage('Promote to TEST') {
       input "Deploy to STAGING?"
-      deleteDir() // Clean-up working directory
+      //deleteDir() // Clean-up working directory
       unstash 'metadataFile'
       def scmData = checkout([
           $class: 'GitSCM',
