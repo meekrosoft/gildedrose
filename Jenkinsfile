@@ -9,23 +9,25 @@ node {
         submoduleCfg: [],
         userRemoteConfigs: [[url: 'https://github.com/meekrosoft/gildedrose.git']]
       ])
-      sh 'cat pom.xml'
-      script {
-          def pomFile = readMavenPom(file: 'pom.xml')
-          if (pomFile.version.endsWith('-SNAPSHOT')) {
-              echo "\n\nThis IS a SNAPSHOT version!\n\n"
-              def currentDateTime = new Date()
-              String timeStamp = currentDateTime.format("yyyy.MM.dd'T'HH.mm.ss.S")
-              String commitSha1 = scmData.GIT_COMMIT.trim()
-              pomFile.version = "${pomFile.version.replace('-SNAPSHOT', '')}-${timeStamp}-${commitSha1}"
-              writeMavenPom(file: 'pom.xml', model: pomFile)
-          }
-          else{
-              echo "\n\nNot a SNAPSHOT version\n\n"
-          }
-          stash (name: 'metadataFile', includes: 'pom.xml')
-          echo "\nJust finished stashing this pom.xml file:"
-          sh 'cat pom.xml'
+      dir ('tempDir') {
+        sh 'cat pom.xml'
+        script {
+            def pomFile = readMavenPom(file: 'pom.xml')
+            if (pomFile.version.endsWith('-SNAPSHOT')) {
+                echo "\n\nThis IS a SNAPSHOT version!\n\n"
+                def currentDateTime = new Date()
+                String timeStamp = currentDateTime.format("yyyy.MM.dd'T'HH.mm.ss.S")
+                String commitSha1 = scmData.GIT_COMMIT.trim()
+                pomFile.version = "${pomFile.version.replace('-SNAPSHOT', '')}-${timeStamp}-${commitSha1}"
+                writeMavenPom(file: 'pom.xml', model: pomFile)
+            }
+            else{
+                echo "\n\nNot a SNAPSHOT version\n\n"
+            }
+            stash (name: 'metadataFile', includes: 'pom.xml')
+            echo "\nJust finished stashing this pom.xml file:"
+            sh 'cat pom.xml'
+        }
       }
    }
    stage('Build') {
