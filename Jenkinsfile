@@ -39,7 +39,6 @@ node {
    stage('Promote to TEST') {
       input "Deploy to STAGING?"
       //deleteDir() // Clean-up working directory
-      unstash 'metadataFile'
       def scmData = checkout([
           $class: 'GitSCM',
           branches: [[name: 'master']],
@@ -48,6 +47,9 @@ node {
           submoduleCfg: [],
           userRemoteConfigs: [[url: 'https://github.com/meekrosoft/MavenRepositoryPromotion.git']]
         ])
-      sh 'docker run -i --rm --name my-maven-project -v ~/.gradle:/root/.gradle -v ~/.m2:/root/.m2  -v "$PWD/tempDir2":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 ./gradlew pTML'
+      dir ('tempDir2') {
+        unstash 'metadataFile'
+      }
+      sh 'docker run -i --rm --name my-maven-project -v ~/.gradle:/root/.gradle -v ~/.m2:/root/.m2  -v "$PWD/tempDir2":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 ./gradlew publish -P targetEnvironment=test -P pomFile=pom.xml'
    }
 }
